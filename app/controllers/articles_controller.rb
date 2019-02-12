@@ -1,27 +1,44 @@
+# frozen_string_literal: true
+
+# Article Controller
 class ArticlesController < ApplicationController
   before_action :set_article, only: [:show, :edit, :update, :destroy]
 
   def index
+    @articles = Article.all
+    @notice = flash[:notice]
   end
 
   def show
+    @markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML,
+                                        autolink: true,
+                                        tables: true)
+    @notice = flash[:notice]
   end
 
   def new
+    @article = Article.new
   end
 
   def create
+    @article = Article.create(article_params)
+    redirect_to article_path(@article),
+                notice: 'Article was successfully created.'
   end
 
   def edit
   end
 
   def update
-
+    @article.update(article_params)
+    redirect_to article_path(@article),
+                notice: 'Article was successfully updated.'
   end
 
   def destroy
-
+    @article.destroy
+    redirect_to articles_path,
+                notice: 'Article was successfully destroyed.'
   end
 
   private
@@ -31,6 +48,6 @@ class ArticlesController < ApplicationController
   end
 
   def article_params
-    params.require(:task).permit(:title, :content)
+    params.require(:article).permit(:title, :content)
   end
 end
